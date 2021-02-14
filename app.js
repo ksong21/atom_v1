@@ -19,10 +19,11 @@ async function start() {
 
             if (message.content.startsWith(prefix)) {
                 const commandName = message.content.trim().split(" ")[0].substring(prefix.length);
+                let embed;
 
                 switch (commandName) {
                     case "help":
-                        const embed = new MessageEmbed()
+                        embed = new MessageEmbed()
                             .setColor("#FF69B4")
                             .setTitle("Help")
                             .setDescription("A brief overview of the bot.")
@@ -32,7 +33,7 @@ async function start() {
                                     value: ""
                                     + "\n$roll - Rolls a number from 1 to 6"
                                     + "\n$play [YouTube URL] - Joins user voice channel and plays video as audio"
-                                    + "\n$stop - Stops playing and leaves voice channel"
+                                    + "\n$stop - Stops playing audio and leaves voice channel"
                                 },
                                 {
                                     name: "Invite",
@@ -47,6 +48,10 @@ async function start() {
                             var regExp = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
                             if (url.match(regExp)) {
                                 if (message.member.voice.channelID != null) {
+                                    embed = new MessageEmbed()
+                                        .setColor("#FF69B4")
+                                        .setDescription("Playing [<@" + message.author.id + ">]");
+                                    message.channel.send(embed);
                                     message.member.voice.channel.join().then(connection => {
                                         const dispatcher = connection.play(ytdl(url));
                                         dispatcher.on("finish", () => {
@@ -54,9 +59,11 @@ async function start() {
                                         });
                                     });
                                 } else {
+                                    console.log("Can't play because no voice channel was found");
                                     message.reply("you must be in a voice channel!");
                                 }
                             } else {
+                                console.log("Invalid YouTube URL");
                                 message.reply("please provide a valid YouTube URL!");
                             }
                         } catch (err) {
@@ -64,6 +71,10 @@ async function start() {
                         }
                         break;
                     case "stop":
+                        embed = new MessageEmbed()
+                            .setColor("#FF69B4")
+                            .setDescription("Stoping music player [<@" + message.author.id + ">]");
+                        message.channel.send(embed);
                         message.guild.me.voice.channel.leave();
                         break;
                     case "roll":
