@@ -31,9 +31,9 @@ async function start() {
                                 {
                                     name: "Commands",
                                     value: ""
-                                    + "\n$roll - Rolls a number from 1 to 6"
                                     + "\n$play [YouTube URL] - Joins user voice channel and plays video as audio"
                                     + "\n$stop - Stops playing audio and leaves voice channel"
+                                    + "\n$roll - Rolls a number from 1 to 6"
                                 },
                                 {
                                     name: "Invite",
@@ -79,7 +79,10 @@ async function start() {
                         break;
                     case "roll":
                         const number = Math.ceil(Math.random() * 6);
-                        message.reply("you rolled a " + number + "!");
+                        embed = new MessageEmbed()
+                            .setColor("#FF69B4")
+                            .setDescription("<@" + message.author.id + "> you rolled a " + number + "!");
+                        message.channel.send(embed);
                         break;
                     default:
                         console.log("Command " + message.content + " doesn't match");
