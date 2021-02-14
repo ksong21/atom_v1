@@ -44,7 +44,8 @@ async function start() {
                     case "play":
                         const url = message.content.trim().split(" ")[1];
                         try {
-                            if (url.startsWith("https://www.youtube.com/watch?v=")) {
+                            var regExp = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+                            if (url.match(regExp)) {
                                 message.member.voice.channel.join().then(connection => {
                                     const dispatcher = connection.play(ytdl(url));
                                     dispatcher.on("finish", () => {
