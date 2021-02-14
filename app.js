@@ -50,7 +50,7 @@ async function start() {
                                 if (message.member.voice.channelID != null) {
                                     embed = new MessageEmbed()
                                         .setColor("#FF69B4")
-                                        .setDescription("Playing [<@" + message.author.id + ">]");
+                                        .setDescription("<@" + message.author.id + "> playing");
                                     message.channel.send(embed);
                                     message.member.voice.channel.join().then(connection => {
                                         const dispatcher = connection.play(ytdl(url));
@@ -60,11 +60,17 @@ async function start() {
                                     });
                                 } else {
                                     console.log("Can't play because no voice channel was found");
-                                    message.reply("you must be in a voice channel!");
+                                    embed = new MessageEmbed()
+                                        .setColor("#FF69B4")
+                                        .setDescription("<@" + message.author.id + "> you must be in a voice channel!");
+                                    message.channel.send(embed);
                                 }
                             } else {
                                 console.log("Invalid YouTube URL");
-                                message.reply("please provide a valid YouTube URL!");
+                                embed = new MessageEmbed()
+                                        .setColor("#FF69B4")
+                                        .setDescription("<@" + message.author.id + "> please provide a valid YouTube URL!");
+                                message.channel.send(embed);
                             }
                         } catch (err) {
                             console.log(err);
@@ -73,7 +79,7 @@ async function start() {
                     case "stop":
                         embed = new MessageEmbed()
                             .setColor("#FF69B4")
-                            .setDescription("Stoping music player [<@" + message.author.id + ">]");
+                            .setDescription("<@" + message.author.id + "> stoping music player");
                         message.channel.send(embed);
                         message.guild.me.voice.channel.leave();
                         break;
