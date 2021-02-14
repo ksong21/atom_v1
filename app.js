@@ -46,12 +46,16 @@ async function start() {
                         try {
                             var regExp = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
                             if (url.match(regExp)) {
-                                message.member.voice.channel.join().then(connection => {
-                                    const dispatcher = connection.play(ytdl(url));
-                                    dispatcher.on("finish", () => {
-                                        message.guild.me.voice.channel.leave();
+                                if (message.member.voice.channelID != null) {
+                                    message.member.voice.channel.join().then(connection => {
+                                        const dispatcher = connection.play(ytdl(url));
+                                        dispatcher.on("finish", () => {
+                                            message.guild.me.voice.channel.leave();
+                                        });
                                     });
-                                });
+                                } else {
+                                    message.reply("you must be in a voice channel!");
+                                }
                             } else {
                                 message.reply("please provide a valid YouTube URL!");
                             }
