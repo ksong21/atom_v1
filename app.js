@@ -1,6 +1,6 @@
 require("dotenv").config();
-const {Client} = require("discord.js");
-// const ytdl = require('ytdl-core');
+const {Client, MessageEmbed} = require("discord.js");
+const ytdl = require("ytdl-core");
 const client = new Client();
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const prefix = "$";
@@ -16,35 +16,57 @@ async function start() {
     client.on("message", (message) => {
         if (!message.author.bot) {
             console.log(message.author.tag + " said " + message.content);
-            const msg = message.content;
 
-            if (msg.startsWith(prefix)) {
-                const commandName = msg.trim().split(" ")[0].substring(prefix.length);
+            if (message.content.startsWith(prefix)) {
+                const commandName = message.content.trim().split(" ")[0].substring(prefix.length);
 
                 switch (commandName) {
                     case "help":
-                        message.channel.send("```Commands:"
-                        + "\n$help - Lists commands"
-                        + "\n$roll - Rolls a number from 1 to 6"
-                        + "\n\nIn development:"
-                        + "\n$play [YouTube URL] - Joins user voice channel and plays video as audio"
-                        + "\n$stop - Stops playing and leaves voice channel```"
-                        );
+                        const embed = new MessageEmbed()
+                            .setColor("#FF69B4")
+                            .setTitle("Help")
+                            .setDescription("A brief overview of the bot.")
+                            .addFields(
+                                {
+                                    name: "Commands",
+                                    value: ""
+                                    + "\n$roll - Rolls a number from 1 to 6"
+                                    + "\n$play [YouTube URL] - Joins user voice channel and plays video as audio"
+                                    + "\n$stop - Stops playing and leaves voice channel"
+                                },
+                                {
+                                    name: "Invite",
+                                    value: "Click HERE (not working) to add the bot to your server!"
+                                }
+                            );
+                        message.channel.send(embed);
                         break;
                     case "play":
-                        message.member.voice.channel.join().then(connection => {
-                            //connection.play(ytdl("https://www.youtube.com/watch?v=6Joyj0dmkug&ab_channel=CartmanHD"));
-                        });
+                        const url = message.content.trim().split(" ")[1];
+                        try {
+                            if (url.startsWith("https://www.youtube.com/watch?v=")) {
+                                message.member.voice.channel.join().then(connection => {
+                                    const dispatcher = connection.play(ytdl(url));
+                                    dispatcher.on("finish", () => {
+                                        message.guild.me.voice.channel.leave();
+                                    });
+                                });
+                            } else {
+                                message.reply("please provide a valid YouTube URL!");
+                            }
+                        } catch (err) {
+                            console.log(err);
+                        }
                         break;
                     case "stop":
-                        message.member.voice.channel.leave();
+                        message.guild.me.voice.channel.leave();
                         break;
                     case "roll":
                         const number = Math.ceil(Math.random() * 6);
                         message.reply("you rolled a " + number + "!");
                         break;
                     default:
-                        console.log("Command " + msg + " doesn't match");
+                        console.log("Command " + message.content + " doesn't match");
                         message.reply("idk that command.");
                         break;
                 }
